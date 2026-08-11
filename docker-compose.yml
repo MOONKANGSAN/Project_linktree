@@ -1,0 +1,64 @@
+services:
+
+  # ── MySQL 데이터베이스 ────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: linktree-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: linktreedb
+      MYSQL_USER: linktree
+      MYSQL_PASSWORD: linktree1234
+    ports:
+      - "3307:3306"   # 로컬 3306 충돌 방지 (컨테이너 내부는 3306 그대로)
+    volumes:
+      - mysql-data:/var/lib/mysql   # DB 데이터 영속성 보장
+    networks:
+      - linktree-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── React 프론트엔드 (Nginx 서빙 + API 프록시) ───────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: linktree-frontend
+    ports:
+      - "80:80"     # 브라우저 접속: http://localhost
+    depends_on:
+      - backend
+    networks:
+      - linktree-network
+
+  # ── Spring Boot 백엔드 ────────────────────────────────────────
+  backend:
+    build:
+      context: ./linktree
+      dockerfile: Dockerfile
+    container_name: linktree-backend
+    environment:
+      # MySQL 연결 정보 (db 서비스명으로 접근)
+      DB_URL: jdbc:mysql://db:3306/linktreedb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      DB_USERNAME: linktree
+      DB_PASSWORD: linktree1234
+      DDL_AUTO: update
+      # Docker 프로필 활성화 → application-docker.properties 적용
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy   # DB 준비 완료 후 백엔드 시작
+    networks:
+      - linktree-network
+
+networks:
+  linktree-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

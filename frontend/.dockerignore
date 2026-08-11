@@ -1,0 +1,5 @@
+# Docker 빌드 제외 (node_modules는 컨테이너 안에서 재설치)
+node_modules
+dist
+.env.local
+.env*.local
