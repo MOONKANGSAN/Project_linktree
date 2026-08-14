@@ -1,17 +1,20 @@
-/* 앱 진입점: URL의 ?id 쿼리 파라미터 유무에 따라 페이지 분기 */
+/* 앱 진입점: URL 파라미터에 따라 페이지 분기 */
 import LandingPage from './pages/LandingPage'
 import LinktreePage from './pages/LinktreePage'
+import LinkRegisterPage from './pages/LinkRegisterPage'
 
 function App() {
-  // ?id=*** 쿼리 파라미터 추출
   const params = new URLSearchParams(window.location.search)
   const userId = params.get('id')
+  const isRegister = params.has('register')
 
-  // id가 있으면 링크트리 프로필 페이지, 없으면 랜딩 페이지
-  if (userId) {
-    return <LinktreePage userId={userId} />
-  }
+  // ?register → 링크 등록 페이지
+  if (isRegister) return <LinkRegisterPage />
 
+  // ?id=xxx → 링크업 뷰어 페이지
+  if (userId) return <LinktreePage userId={userId} />
+
+  // 기본 → 랜딩 페이지
   return <LandingPage />
 }
 
