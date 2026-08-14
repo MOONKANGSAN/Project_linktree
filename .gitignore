@@ -1,0 +1,22 @@
+# 프로젝트 루트 공통 .gitignore
+# (frontend/, linktree/ 하위는 각 디렉토리의 .gitignore가 별도로 관리함)
+
+# Claude Code / 에이전트 로컬 설정 (개인 환경별로 달라 공유 불필요)
+.claude/
+
+# OS 생성 파일
+.DS_Store
+Thumbs.db
+
+# 에디터/IDE
+.idea/
+.vscode/
+*.iml
+
+# 환경변수 (DB 계정정보 등 민감정보 포함 가능)
+.env
+.env.*
+!.env.example
+
+# 로그 파일
+*.log

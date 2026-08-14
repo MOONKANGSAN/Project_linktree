@@ -1,0 +1,160 @@
+/* 링크트리 프로필 페이지 스타일 */
+.lt-wrapper {
+  min-height: 100vh;
+  background: #f1f5f9;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lt-bg-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: linear-gradient(180deg, var(--theme, #7c3aed) 0%, transparent 100%);
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lt-main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 480px;
+  padding: 48px 24px 40px;
+}
+
+/* 프로필 */
+.lt-profile {
+  text-align: center;
+  margin-bottom: 32px;
+}
+.lt-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--theme, #7c3aed), #818cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+.lt-display-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 4px;
+}
+.lt-username {
+  font-size: 14px;
+  color: #94a3b8;
+  margin-bottom: 12px;
+}
+.lt-bio {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+/* 링크 버튼 */
+.lt-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.lt-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 14px;
+  text-decoration: none;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  border-left: 4px solid var(--btn-color, #7c3aed);
+  font-weight: 600;
+}
+.lt-link-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background: var(--btn-color, #7c3aed);
+  color: #fff;
+}
+.lt-link-btn__icon {
+  font-size: 20px;
+  width: 28px;
+  text-align: center;
+}
+.lt-link-btn__label {
+  flex: 1;
+  font-size: 16px;
+}
+.lt-link-btn__arrow {
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+/* 푸터 */
+.lt-footer {
+  text-align: center;
+}
+.lt-footer__brand {
+  font-size: 14px;
+  color: #94a3b8;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.lt-footer__brand:hover {
+  color: #7c3aed;
+}
+
+/* 404 페이지 */
+.lt-not-found {
+  text-align: center;
+  padding: 40px;
+}
+.lt-not-found__emoji {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 20px;
+}
+.lt-not-found h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 10px;
+}
+.lt-not-found p {
+  color: #64748b;
+  margin-bottom: 28px;
+  font-size: 16px;
+}
+.lt-back-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  background: #7c3aed;
+  color: #fff;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.lt-back-btn:hover {
+  background: #6d28d9;
+}
+
+/* 404일 때 wrapper는 가운데 정렬 */
+.lt-wrapper--center {
+  justify-content: center;
+}

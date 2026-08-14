@@ -1,0 +1,26 @@
+/* 회원가입 모달 전용 스타일 */
+
+/* 전화번호 3칸 입력 레이아웃 */
+.phone-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.phone-row .form-input {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+.phone-separator {
+  color: #94a3b8;
+  font-size: 18px;
+  font-weight: 300;
+  flex-shrink: 0;
+}
+
+/* 비밀번호 강도 힌트 */
+.pw-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 4px;
+}
