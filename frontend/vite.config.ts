@@ -8,10 +8,14 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
+    // 컨테이너 외부(호스트 브라우저)에서 접근 허용
+    host: true,
+    port: 5173,
     proxy: {
-      // /api/* 요청을 Spring Boot(8080)로 전달, 세션 쿠키도 함께 전달
+      // docker compose watch 환경: 서비스명 'backend'으로 접근
+      // 로컬 직접 실행 시에는 localhost:8080 으로 바꿔서 사용
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://backend:8080',
         changeOrigin: true,
       },
     },
