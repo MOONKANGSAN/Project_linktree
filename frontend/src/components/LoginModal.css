@@ -16,7 +16,7 @@
   to   { opacity: 1; }
 }
 
-/* 모달 카드 */
+/* 모달 카드 — 데스크탑 */
 .modal-card {
   background: #fff;
   border-radius: 16px;
@@ -31,6 +31,65 @@
 @keyframes card-in {
   from { opacity: 0; transform: translateY(12px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+/* ── 모바일: 바텀시트 형태로 전환 ── */
+@media (max-width: 600px) {
+  .modal-overlay {
+    align-items: flex-end;
+  }
+
+  .modal-card {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    padding: 28px 20px 36px;
+    /* 화면 높이의 최대 90%까지만 차지하고 넘치면 스크롤 */
+    max-height: 90dvh;
+    overflow-y: auto;
+    animation: sheet-up 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  @keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+
+  /* 상단 드래그 핸들 표시 */
+  .modal-card::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #e2e8f0;
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+  }
+
+  .modal-subtitle {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .form-input {
+    padding: 12px 12px;
+    font-size: 16px; /* iOS 자동 확대 방지 (16px 미만이면 확대됨) */
+  }
+
+  .modal-submit-btn {
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .modal-close {
+    top: 20px;
+    right: 16px;
+  }
 }
 
 /* 닫기 버튼 */

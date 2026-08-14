@@ -10,6 +10,9 @@
 
 /* 네비게이션 버튼: 모서리 둥근 검정 사각형 */
 .nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 10px 20px;
   background: #000;
   color: #fff;
@@ -26,6 +29,134 @@
 }
 .nav-btn:active {
   transform: translateY(0);
+}
+
+.nav-btn__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* 모바일: 데스크탑 네비 숨김 */
+@media (max-width: 600px) {
+  #desktop-nav {
+    display: none;
+  }
+}
+
+/* ── 모바일 전용 원형 프로필 버튼 ── */
+/* 데스크탑에서는 숨김 */
+#mobile-profile-btn {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  #mobile-profile-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #000;
+    color: #fff;
+    font-size: 20px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  #mobile-profile-btn:active {
+    transform: scale(0.93);
+  }
+  /* 로그인 상태: 초록 테두리로 표시 */
+  #mobile-profile-btn.mobile-profile-btn--logged-in {
+    border: 2.5px solid #80ff59;
+  }
+}
+
+/* ── 모바일 인증 선택 모달 ── */
+.auth-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: overlay-in 0.15s ease;
+}
+
+.auth-menu-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 32px 28px 24px;
+  width: calc(100% - 48px);
+  max-width: 320px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: card-in 0.2s ease;
+}
+
+.auth-menu-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.auth-menu-close:hover {
+  color: #1e293b;
+}
+
+.auth-menu-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.auth-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  margin-bottom: 10px;
+}
+.auth-menu-btn:last-child {
+  margin-bottom: 0;
+}
+.auth-menu-btn:hover {
+  background: #222;
+}
+.auth-menu-btn--secondary {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+.auth-menu-btn--secondary:hover {
+  background: #e2e8f0;
+}
+.auth-menu-btn__icon {
+  font-size: 18px;
 }
 
 /* 랜딩 페이지 레이아웃 */
@@ -56,19 +187,24 @@
 /* 로고 */
 .landing-logo {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 48px;
 }
 .landing-logo__icon {
-  font-size: 32px;
+  font-size: 64px;
+  line-height: 1;
 }
 .landing-logo__text {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 700;
   color: #000;
   letter-spacing: -0.5px;
+}
+.landing-logo__up {
+  color: #80ff59;
 }
 
 /* 헤드라인 */
@@ -183,4 +319,41 @@
   font-weight: 400;
   color: #64748b;
   line-height: 1.6;
+}
+
+/* 모바일: 카드 높이 40% 수준으로 축소 + 아이콘 좌측 배치 */
+@media (max-width: 600px) {
+  .feature-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: 14px;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 14px;
+  }
+  .feature-card__icon {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 20px;
+    margin-bottom: 0;
+    align-self: center;
+  }
+  .feature-card h3 {
+    grid-column: 2;
+    grid-row: 1;
+    font-size: 14px;
+    margin-bottom: 2px;
+    align-self: end;
+  }
+  .feature-card p {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 12px;
+    line-height: 1.4;
+    align-self: start;
+  }
 }
