@@ -4,6 +4,8 @@ FROM node:20-alpine AS dev
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
+# 초기 소스 복사 (watch의 sync는 변경분만 덮어씀 → COPY가 없으면 404)
+COPY . .
 EXPOSE 5173
 CMD ["npm", "run", "dev", "--", "--host"]
 

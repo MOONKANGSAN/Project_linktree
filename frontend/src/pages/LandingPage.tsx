@@ -6,29 +6,89 @@ import SignUpModal from '../components/SignUpModal'
 import './LandingPage.css'
 
 function LandingPage() {
-  // 임시 로그인 상태 (실제 인증 연동 전 테스트용)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  // 현재 열린 모달 ('login' | 'signup' | null)
   const [modal, setModal] = useState<ModalType>(null)
+  // 모바일 전용: 프로필 버튼 클릭 시 열리는 인증 선택 메뉴
+  const [mobileAuthMenu, setMobileAuthMenu] = useState(false)
+
+  const openModal = (type: ModalType) => {
+    setMobileAuthMenu(false)
+    setModal(type)
+  }
 
   return (
     <div className="landing-wrapper">
-      {/* 우측 상단 네비게이션 버튼 */}
-      <nav className="top-nav">
+
+      {/* ── 데스크탑 전용 네비게이션 버튼 ── */}
+      <nav id="desktop-nav" className="top-nav">
         {isLoggedIn ? (
           <>
-            <button className="nav-btn">내 링크트리</button>
-            <button className="nav-btn" onClick={() => setIsLoggedIn(false)}>로그아웃</button>
+            <button className="nav-btn">
+              <span className="nav-btn__label">내 LinkUP</span>
+            </button>
+            <button className="nav-btn" onClick={() => setIsLoggedIn(false)}>
+              <span className="nav-btn__label">로그아웃</span>
+            </button>
           </>
         ) : (
           <>
-            <button className="nav-btn" onClick={() => setModal('login')}>로그인</button>
-            <button className="nav-btn" onClick={() => setModal('signup')}>회원가입</button>
+            <button className="nav-btn" onClick={() => setModal('login')}>
+              <span className="nav-btn__label">로그인</span>
+            </button>
+            <button className="nav-btn" onClick={() => setModal('signup')}>
+              <span className="nav-btn__label">회원가입</span>
+            </button>
           </>
         )}
       </nav>
 
-      {/* 배경 그라디언트 장식 원 */}
+      {/* ── 모바일 전용 원형 프로필 버튼 ── */}
+      <button
+        id="mobile-profile-btn"
+        className={`mobile-profile-btn${isLoggedIn ? ' mobile-profile-btn--logged-in' : ''}`}
+        onClick={() => setMobileAuthMenu(true)}
+        aria-label="계정 메뉴"
+      >
+        👤
+      </button>
+
+      {/* 모바일 인증 선택 모달 */}
+      {mobileAuthMenu && (
+        <div className="auth-menu-overlay" onClick={() => setMobileAuthMenu(false)}>
+          <div className="auth-menu-card" onClick={e => e.stopPropagation()}>
+            <button className="auth-menu-close" onClick={() => setMobileAuthMenu(false)}>✕</button>
+            {isLoggedIn ? (
+              <>
+                <p className="auth-menu-title">계정 메뉴</p>
+                <button className="auth-menu-btn" onClick={() => setMobileAuthMenu(false)}>
+                  <span className="auth-menu-btn__icon">🔗</span>
+                  <span>내 LinkUP</span>
+                </button>
+                <button className="auth-menu-btn auth-menu-btn--secondary"
+                  onClick={() => { setMobileAuthMenu(false); setIsLoggedIn(false) }}>
+                  <span className="auth-menu-btn__icon">🚪</span>
+                  <span>로그아웃</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="auth-menu-title">시작하기</p>
+                <button className="auth-menu-btn" onClick={() => openModal('login')}>
+                  <span className="auth-menu-btn__icon">👤</span>
+                  <span>로그인</span>
+                </button>
+                <button className="auth-menu-btn auth-menu-btn--secondary"
+                  onClick={() => openModal('signup')}>
+                  <span className="auth-menu-btn__icon">✏️</span>
+                  <span>회원가입</span>
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 배경 장식 원 */}
       <div className="landing-blob landing-blob--top" />
       <div className="landing-blob landing-blob--bottom" />
 
@@ -36,7 +96,9 @@ function LandingPage() {
         {/* 로고 영역 */}
         <div className="landing-logo">
           <span className="landing-logo__icon">🌿</span>
-          <span className="landing-logo__text">Linktree</span>
+          <span className="landing-logo__text">
+            Link<span className="landing-logo__up">UP</span>
+          </span>
         </div>
 
         {/* 헤드라인 */}
@@ -45,7 +107,7 @@ function LandingPage() {
           <span className="landing-headline--accent">한 곳에 모아</span>보세요
         </h1>
         <p className="landing-sub">
-          링크트리를 시작하세요! 프로필 하나로 모든 링크를 공유할 수 있습니다.
+          LinkUP을 시작하세요! 프로필 하나로 모든 링크를 공유할 수 있습니다.
         </p>
 
         {/* CTA 버튼 */}
@@ -76,7 +138,7 @@ function LandingPage() {
         </div>
       </main>
 
-      {/* 모달 렌더링 */}
+      {/* 로그인 / 회원가입 모달 */}
       {modal === 'login' && (
         <LoginModal
           onClose={() => setModal(null)}
