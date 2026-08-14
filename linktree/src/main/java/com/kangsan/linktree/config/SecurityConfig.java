@@ -36,11 +36,10 @@ public class SecurityConfig {
                 // 세션 기반 인증: 로그인 시 세션 생성, 이후 쿠키로 유지
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                // 공개 엔드포인트: 회원가입, 로그인, H2 콘솔
+                // 세션 검증은 각 Controller에서 수동으로 수행
+                // Spring Security는 경로 허용만 담당
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/members/signup", "/api/members/login").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 // H2 콘솔은 iframe 사용 (로컬 개발 전용)
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .httpBasic(httpBasic -> httpBasic.disable())
