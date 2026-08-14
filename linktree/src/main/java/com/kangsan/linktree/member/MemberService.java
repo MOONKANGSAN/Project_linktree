@@ -1,8 +1,11 @@
 package com.kangsan.linktree.member;
 
+import com.kangsan.linktree.member.dto.LoginRequest;
+import com.kangsan.linktree.member.dto.LoginResponse;
 import com.kangsan.linktree.member.dto.SignUpRequest;
 import com.kangsan.linktree.member.dto.SignUpResponse;
 import com.kangsan.linktree.member.exception.DuplicateIdException;
+import com.kangsan.linktree.member.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,31 +14,42 @@ import org.springframework.transaction.annotation.Transactional;
 // 회원 관련 비즈니스 로직
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true) // 기본은 조회 트랜잭션, 쓰기가 필요한 메서드만 별도로 @Transactional 부여
+@Transactional(readOnly = true)
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // 회원가입 처리: 아이디 중복 검사 -> 비밀번호 암호화 -> 저장
+    // 회원가입: 아이디 중복 검사 → BCrypt 해싱 → 저장
     @Transactional
     public SignUpResponse signUp(SignUpRequest request) {
-        // 1) 아이디 중복 검사
         if (memberRepository.existsByLoginId(request.id())) {
             throw new DuplicateIdException(request.id());
         }
 
-        // 2) 비밀번호는 반드시 암호화하여 저장 (평문 저장 금지)
         String encodedPassword = passwordEncoder.encode(request.password());
 
-        // 3) 엔티티 생성 및 저장
         Member member = Member.builder()
                 .id(request.id())
                 .password(encodedPassword)
                 .phone(request.phone())
+                .email(request.email())
                 .build();
 
-        Member savedMember = memberRepository.save(member);
-        return SignUpResponse.from(savedMember);
+        return SignUpResponse.from(memberRepository.save(member));
+    }
+
+    // 로그인: 아이디 조회 → BCrypt 비밀번호 검증
+    // 보안상 아이디 없음과 비밀번호 불일치를 동일 예외로 처리하여 어느 쪽이 틀렸는지 노출 방지
+    public LoginResponse login(LoginRequest request) {
+        Member member = memberRepository.findByLoginId(request.id())
+                .orElseThrow(InvalidCredentialsException::new);
+
+        if (!passwordEncoder.matches(request.password(), member.getPassword())) {
+            throw new InvalidCredentialsException();
+        }
+
+        return LoginResponse.from(member);
     }
 }
+

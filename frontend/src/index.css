@@ -1,6 +1,36 @@
 /* Tailwind CSS v4 진입점 */
 @import "tailwindcss";
 
+/* 로컬 폰트 등록: public/fonts/ */
+@font-face {
+  font-family: 'Jamsil';
+  src: url('/fonts/Jamsil3_Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jamsil';
+  src: url('/fonts/Jamsil4_Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jamsil';
+  src: url('/fonts/Jamsil5_Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Jamsil';
+  src: url('/fonts/Jamsil6_ExtraBold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 전역 기본 스타일 */
 * {
   box-sizing: border-box;
@@ -9,6 +39,6 @@
 }
 
 body {
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Jamsil', system-ui, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
 }

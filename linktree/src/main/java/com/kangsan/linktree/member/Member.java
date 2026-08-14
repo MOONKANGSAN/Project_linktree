@@ -46,16 +46,21 @@ public class Member {
     @Column(name = "phone", nullable = false, length = 20)
     private String phone;
 
+    // 이메일 (중복 불가)
+    @Column(name = "email", nullable = false, unique = true, length = 100)
+    private String email;
+
     // 연결된 프로필 고유번호 (프로필 기능이 아직 없으므로 FK 제약조건 없이 컬럼만 보유)
     @Column(name = "profile_idx")
     private Long profileIdx;
 
     // 회원가입 시 사용하는 생성자 - 비밀번호는 이미 암호화된 값을 전달받는다
     @Builder
-    public Member(String id, String password, String phone) {
+    public Member(String id, String password, String phone, String email) {
         this.id = id;
         this.password = password;
         this.phone = phone;
+        this.email = email;
         this.state = MemberState.ACTIVE; // 가입 즉시 정상 상태로 설정
     }
 }

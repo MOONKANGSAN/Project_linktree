@@ -8,13 +8,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-// 보안 설정 - 현재는 회원가입 API만 존재하므로 최소 설정만 구성 (로그인/JWT는 추후 구현)
+import java.util.List;
+
+// 보안 설정: 세션 기반 인증, CORS, BCrypt 비밀번호 암호화
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // 비밀번호 암호화용 인코더 (BCrypt) - MemberService에서 회원가입 시 사용
+    // BCrypt 비밀번호 인코더 - MemberService에서 주입받아 사용
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -23,18 +28,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // REST API + JWT 방식이므로 세션 기반 CSRF 보호는 불필요
+                // REST API 방식이므로 CSRF 비활성화
+                // (쿠키 세션이지만 프론트가 별도 Origin이고 SameSite=Lax가 기본 방어를 담당)
                 .csrf(csrf -> csrf.disable())
-                // 세션을 사용하지 않음 (추후 JWT 기반 인증으로 전환 예정)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // 임시: 로그인/JWT 인증 기능 구현 전까지는 전체 요청 허용
-                // 로그인 기능 추가 시 permitAll 대상을 /api/members/signup, /api/members/login 등으로 좁힐 것
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-                // H2 콘솔은 iframe을 사용하므로 프레임 옵션 비활성화 (로컬 개발용)
+                // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                // 세션 기반 인증: 로그인 시 세션 생성, 이후 쿠키로 유지
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                // 공개 엔드포인트: 회원가입, 로그인, H2 콘솔
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/members/signup", "/api/members/login").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll()
+                        .anyRequest().authenticated())
+                // H2 콘솔은 iframe 사용 (로컬 개발 전용)
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(formLogin -> formLogin.disable());
 
         return http.build();
+    }
+
+    // 프론트엔드(localhost:5173)에서 오는 요청 허용 + 세션 쿠키 전달 허용
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        // 세션 쿠키를 프론트에서 받고 보낼 수 있도록 credentials 허용
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
     }
 }

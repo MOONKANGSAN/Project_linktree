@@ -8,6 +8,7 @@ public record SignUpResponse(
         Long idx,
         String id,
         String phone,
+        String email,
         MemberState state
 ) {
     // Member 엔티티를 응답 DTO로 변환
@@ -16,6 +17,7 @@ public record SignUpResponse(
                 member.getIdx(),
                 member.getId(),
                 member.getPhone(),
+                member.getEmail(),
                 member.getState()
         );
     }

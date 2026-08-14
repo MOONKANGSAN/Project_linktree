@@ -1,6 +1,7 @@
 package com.kangsan.linktree.global.exception;
 
 import com.kangsan.linktree.member.exception.DuplicateIdException;
+import com.kangsan.linktree.member.exception.InvalidCredentialsException;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleDuplicateId(DuplicateIdException e) {
         ErrorResponse response = ErrorResponse.of(HttpStatus.CONFLICT.value(), e.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    // 아이디/비밀번호 불일치 시 401 응답
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException e) {
+        ErrorResponse response = ErrorResponse.of(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 }
