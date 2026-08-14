@@ -23,19 +23,37 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── React 프론트엔드 (Nginx 서빙 + API 프록시) ───────────────────
+  # ── React 프론트엔드 (개발: Vite dev 서버 + HMR) ─────────────────
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      # dev 스테이지 사용 → Vite 개발 서버로 실행 (watch와 함께 사용)
+      target: dev
     container_name: linktree-frontend
     ports:
-      # .env의 FRONTEND_PORT 값으로 변경 가능 (기본 3000 → 80 대신 사용)
-      - "${FRONTEND_PORT:-3000}:80"
+      - "${FRONTEND_PORT:-5173}:5173"
     depends_on:
       - backend
     networks:
       - linktree-network
+    develop:
+      watch:
+        # src 변경 → 컨테이너 내부로 파일 동기화 (Vite HMR이 자동 감지)
+        - path: ./frontend/src
+          action: sync
+          target: /app/src
+        # index.html 변경 → 동기화
+        - path: ./frontend/index.html
+          action: sync
+          target: /app/index.html
+        # vite 설정 변경 → 개발 서버 재시작
+        - path: ./frontend/vite.config.ts
+          action: sync+restart
+          target: /app/vite.config.ts
+        # 패키지 추가/삭제 → npm install 재실행을 위해 이미지 재빌드
+        - path: ./frontend/package.json
+          action: rebuild
 
   # ── Spring Boot 백엔드 ────────────────────────────────────────
   backend:
@@ -50,13 +68,20 @@ services:
       DDL_AUTO: update
       SPRING_PROFILES_ACTIVE: docker
     ports:
-      # .env의 BACKEND_PORT 값으로 변경 가능 (기본 8081 → 8080 충돌 방지)
       - "${BACKEND_PORT:-8081}:8080"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - linktree-network
+    develop:
+      watch:
+        # Java 소스 변경 → Gradle 재빌드 + 컨테이너 재시작 (컴파일 필요)
+        - path: ./linktree/src
+          action: rebuild
+        # 의존성 변경 → 전체 재빌드
+        - path: ./linktree/build.gradle
+          action: rebuild
 
 networks:
   linktree-network:
