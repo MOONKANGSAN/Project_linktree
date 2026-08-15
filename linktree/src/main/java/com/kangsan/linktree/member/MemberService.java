@@ -39,6 +39,13 @@ public class MemberService {
         return SignUpResponse.from(memberRepository.save(member));
     }
 
+    // 세션에 저장된 memberIdx로 회원 조회 — GET /api/members/me 에서 사용
+    public LoginResponse findById(Long idx) {
+        Member member = memberRepository.findById(idx)
+                .orElseThrow(InvalidCredentialsException::new);
+        return LoginResponse.from(member);
+    }
+
     // 로그인: 아이디 조회 → BCrypt 비밀번호 검증
     // 보안상 아이디 없음과 비밀번호 불일치를 동일 예외로 처리하여 어느 쪽이 틀렸는지 노출 방지
     public LoginResponse login(LoginRequest request) {

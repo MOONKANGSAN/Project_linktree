@@ -4,5 +4,6 @@ package com.kangsan.linktree.link.dto;
 public record BranchSaveRequest(
         String label,
         String url,
-        String inputType   // "url" or "file"
+        String inputType,          // "url" or "file"
+        String existingFilePath    // 수정 시 기존 파일 경로
 ) {}

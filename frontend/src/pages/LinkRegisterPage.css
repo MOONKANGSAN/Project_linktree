@@ -648,3 +648,9 @@
     align-self: center;
   }
 }
+
+/* 기존 파일 있을 때 파일명 강조 */
+.url-file-wrap__file-name--existing {
+  color: #7c3aed;
+  font-style: italic;
+}

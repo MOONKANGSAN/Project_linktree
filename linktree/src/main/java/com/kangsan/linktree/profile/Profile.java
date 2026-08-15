@@ -1,5 +1,6 @@
 package com.kangsan.linktree.profile;
 
+import com.kangsan.linktree.global.enums.CommonState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,11 @@ public class Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx")
     private Long idx;
+
+    // 프로필 상태 (ACTIVE: 정상, INACTIVE: 비활성) — 기본값 ACTIVE
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, columnDefinition = "VARCHAR(10) NOT NULL DEFAULT 'ACTIVE'")
+    private CommonState state;
 
     // 연결된 회원 고유번호 (member.idx 참조)
     @Column(name = "member_idx", nullable = false, unique = true)
@@ -43,6 +49,7 @@ public class Profile {
         this.bio1 = bio1;
         this.bio2 = bio2;
         this.bio3 = bio3;
+        this.state = CommonState.ACTIVE;
     }
 
     public void updateBio(String bio1, String bio2, String bio3) {

@@ -1,5 +1,5 @@
 /* 시작 유도 랜딩 페이지: ?id 쿼리 없을 때 노출 */
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ModalType } from '../types/auth'
 import LoginModal from '../components/LoginModal'
 import SignUpModal from '../components/SignUpModal'
@@ -7,9 +7,26 @@ import './LandingPage.css'
 
 function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [loginUserId, setLoginUserId] = useState('')
   const [modal, setModal] = useState<ModalType>(null)
   // 모바일 전용: 프로필 버튼 클릭 시 열리는 인증 선택 메뉴
   const [mobileAuthMenu, setMobileAuthMenu] = useState(false)
+
+  // 마운트 시 기존 세션 확인 — 세션이 살아있으면 로그인 상태 자동 복원
+  useEffect(() => {
+    fetch('/api/members/me', { credentials: 'include' })
+      .then(res => (res.ok ? res.json() : null))
+      .then(data => {
+        if (data) {
+          setIsLoggedIn(true)
+          setLoginUserId(data.id)
+        }
+      })
+  }, [])
+
+  const goToMyLinkUp = () => {
+    window.location.href = `/${loginUserId}`
+  }
 
   const openModal = (type: ModalType) => {
     setMobileAuthMenu(false)
@@ -23,7 +40,7 @@ function LandingPage() {
       <nav id="desktop-nav" className="top-nav">
         {isLoggedIn ? (
           <>
-            <button className="nav-btn">
+            <button className="nav-btn" onClick={goToMyLinkUp}>
               <span className="nav-btn__label">내 LinkUP</span>
             </button>
             <button className="nav-btn" onClick={() => setIsLoggedIn(false)}>
@@ -60,7 +77,7 @@ function LandingPage() {
             {isLoggedIn ? (
               <>
                 <p className="auth-menu-title">계정 메뉴</p>
-                <button className="auth-menu-btn" onClick={() => setMobileAuthMenu(false)}>
+                <button className="auth-menu-btn" onClick={() => { setMobileAuthMenu(false); goToMyLinkUp() }}>
                   <span className="auth-menu-btn__icon">🔗</span>
                   <span>내 LinkUP</span>
                 </button>
@@ -113,7 +130,7 @@ function LandingPage() {
         {/* CTA 버튼 */}
         <div className="landing-actions">
           <button className="btn btn--primary" onClick={() => setModal('signup')}>무료로 시작하기</button>
-          <a className="btn btn--ghost" href="?id=demo">
+          <a className="btn btn--ghost" href="/demo">
             데모 보기 →
           </a>
         </div>
@@ -143,7 +160,7 @@ function LandingPage() {
         <LoginModal
           onClose={() => setModal(null)}
           onSwitchToSignUp={() => setModal('signup')}
-          onLoginSuccess={() => setIsLoggedIn(true)}
+          onLoginSuccess={(id) => { setIsLoggedIn(true); setLoginUserId(id) }}
         />
       )}
       {modal === 'signup' && (

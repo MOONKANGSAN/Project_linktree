@@ -67,11 +67,16 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-linktree1234}
       DDL_AUTO: update
       SPRING_PROFILES_ACTIVE: docker
+      # 절대 경로로 지정 — 상대 경로는 Tomcat 임시 디렉터리 기준으로 해석되어 FileNotFoundException 유발
+      UPLOAD_DIR: /app/uploads
     ports:
       - "${BACKEND_PORT:-8081}:8080"
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      # 업로드 파일 영속화 — 컨테이너 재시작 시 파일 유지
+      - linktree-uploads:/app/uploads
     networks:
       - linktree-network
     develop:
@@ -90,3 +95,4 @@ networks:
 volumes:
   # 프로젝트 고유 볼륨 이름 (project2의 mysql-data와 격리)
   linktree-mysql-data:
+  linktree-uploads:

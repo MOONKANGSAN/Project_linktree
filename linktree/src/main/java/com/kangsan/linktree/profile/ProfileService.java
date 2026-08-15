@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 @Service
@@ -50,7 +51,9 @@ public class ProfileService {
 
         String fileName = "photo_" + UUID.randomUUID() + ext;
         Path dest = dir.resolve(fileName);
-        file.transferTo(dest.toFile());
+        // transferTo(File)는 Tomcat 임시 경로 기준으로 해석되어 FileNotFoundException 유발
+        // InputStream에서 직접 복사하면 경로 문제 없이 동작함
+        Files.copy(file.getInputStream(), dest, StandardCopyOption.REPLACE_EXISTING);
 
         profile.updatePhotoPath(dest.toString());
         return ProfileResponse.from(profile);
