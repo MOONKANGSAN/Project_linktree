@@ -32,6 +32,15 @@ public class Profile {
     @Column(name = "photo_path", length = 500)
     private String photoPath;
 
+    // 공개여부 (1:나만보기 / 2:전체공개(기본) / 3:링크받은사람만) — DB TINYINT
+    @Convert(converter = ShareTypeConverter.class)
+    @Column(name = "visibility", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 2")
+    private ShareType visibility = ShareType.PUBLIC;
+
+    // 닉네임 (선택 입력, 공개 프로필 카드에 표시)
+    @Column(name = "nickname", length = 50)
+    private String nickname;
+
     // 소개글 1~3 (선택 입력)
     @Column(name = "bio1", length = 200)
     private String bio1;
@@ -43,16 +52,21 @@ public class Profile {
     private String bio3;
 
     @Builder
-    public Profile(Long memberIdx, String photoPath, String bio1, String bio2, String bio3) {
+    public Profile(Long memberIdx, String photoPath, ShareType visibility, String nickname, String bio1, String bio2, String bio3) {
         this.memberIdx = memberIdx;
         this.photoPath = photoPath;
+        this.visibility = visibility != null ? visibility : ShareType.PUBLIC;
+        this.nickname = nickname;
         this.bio1 = bio1;
         this.bio2 = bio2;
         this.bio3 = bio3;
         this.state = CommonState.ACTIVE;
     }
 
-    public void updateBio(String bio1, String bio2, String bio3) {
+    // 공개여부 + 닉네임 + 소개글 업데이트 (저장 시 함께 처리)
+    public void updateProfile(ShareType visibility, String nickname, String bio1, String bio2, String bio3) {
+        this.visibility = visibility != null ? visibility : ShareType.PUBLIC;
+        this.nickname = nickname;
         this.bio1 = bio1;
         this.bio2 = bio2;
         this.bio3 = bio3;

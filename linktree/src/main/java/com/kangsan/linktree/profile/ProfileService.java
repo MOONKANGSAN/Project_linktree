@@ -25,7 +25,7 @@ public class ProfileService {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    // 프로필이 없으면 신규 생성, 있으면 소개글 업데이트
+    // 프로필이 없으면 신규 생성, 있으면 공개여부 + 닉네임 + 소개글 업데이트
     @Transactional
     public ProfileResponse saveBio(Long memberIdx, ProfileSaveRequest request) {
         Profile profile = profileRepository.findByMemberIdx(memberIdx)
@@ -33,7 +33,11 @@ public class ProfileService {
                         Profile.builder().memberIdx(memberIdx).build()
                 ));
 
-        profile.updateBio(request.bio1(), request.bio2(), request.bio3());
+        // 프론트에서 받은 int 값(1/2/3)을 ShareType enum으로 변환 (null이면 기본값 PUBLIC=2)
+        ShareType visibility = request.visibility() != null
+                ? ShareType.from(request.visibility())
+                : ShareType.PUBLIC;
+        profile.updateProfile(visibility, request.nickname(), request.bio1(), request.bio2(), request.bio3());
         return ProfileResponse.from(profile);
     }
 
@@ -62,7 +66,7 @@ public class ProfileService {
     public ProfileResponse getMyProfile(Long memberIdx) {
         return profileRepository.findByMemberIdx(memberIdx)
                 .map(ProfileResponse::from)
-                .orElse(new ProfileResponse(null, null, null, null, null));
+                .orElse(new ProfileResponse(null, null, 2, null, null, null, null));
     }
 
     private String getExtension(String filename) {
