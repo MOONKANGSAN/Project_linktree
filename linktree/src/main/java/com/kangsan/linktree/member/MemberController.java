@@ -1,5 +1,6 @@
 package com.kangsan.linktree.member;
 
+import com.kangsan.linktree.global.exception.UnauthorizedException;
 import com.kangsan.linktree.global.session.SessionConst;
 import com.kangsan.linktree.member.dto.LoginRequest;
 import com.kangsan.linktree.member.dto.LoginResponse;
@@ -11,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+
+    // 세션 유효성 체크 API — 로그인 상태면 200, 아니면 401
+    // GET /api/members/me
+    @GetMapping("/me")
+    public ResponseEntity<LoginResponse> getMe(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) throw new UnauthorizedException();
+        Long memberIdx = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (memberIdx == null) throw new UnauthorizedException();
+        return ResponseEntity.ok(memberService.findById(memberIdx));
+    }
 
     // 회원가입 API
     // POST /api/members/signup

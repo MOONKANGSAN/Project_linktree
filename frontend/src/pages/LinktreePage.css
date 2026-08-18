@@ -158,3 +158,152 @@
 .lt-wrapper--center {
   justify-content: center;
 }
+
+/* 상단 바 — "내 LinkUP" 버튼 */
+.lt-topbar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+}
+
+.lt-my-btn {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(124, 58, 237, 0.25);
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7c3aed;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.lt-my-btn:hover {
+  background: #7c3aed;
+  color: #fff;
+  border-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+}
+
+/* "내 링크업 관리" 버튼 — 자신의 페이지에서만 표시 */
+.lt-manage-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1.5px solid var(--theme, #7c3aed);
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme, #7c3aed);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.lt-manage-btn:hover {
+  background: var(--theme, #7c3aed);
+  color: #fff;
+}
+
+/* 파일 타입 링크 — 비활성 */
+.lt-link-btn--disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.lt-link-btn--disabled:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: #fff;
+  color: #1e293b;
+}
+
+/* 가지치기 토글 버튼 — 펼쳐진 상태에서 아래 모서리 직각 */
+.lt-link-btn--toggle {
+  width: 100%;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+}
+
+.lt-link-btn--open {
+  border-radius: 14px 14px 0 0;
+  box-shadow: none;
+}
+
+.lt-link-btn--open:hover {
+  transform: none;
+  border-radius: 14px 14px 0 0;
+}
+
+/* 펼치기/닫기 캐럿 */
+.lt-link-btn__arrow--caret {
+  font-size: 11px;
+  opacity: 0.7;
+  transition: none;
+}
+
+/* 가지치기 그룹 래퍼 */
+.lt-branch-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 가지치기 카드 목록 — 항상 4칸 기준 고정 그리드 */
+.lt-branch-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding-top: 8px;
+}
+
+/* 가지치기 개별 카드
+ * - 정사각형 (aspect-ratio: 1)
+ * - 아래 모서리만 둥글게
+ * - 카드 수와 무관하게 4칸 기준 너비 고정
+ */
+.lt-branch-card {
+  /* 이전(4:3) 세로의 60% → 4:3 × 0.6 = height/width 0.45 → 20:9 */
+  aspect-ratio: 20 / 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 6px;
+  background: #fff;
+  border-radius: 0 0 14px 14px;
+  border-top: 3px solid var(--branch-color, #7c3aed);
+  text-decoration: none;
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: all 0.18s ease;
+  word-break: keep-all;
+  overflow: hidden;
+}
+
+.lt-branch-card:hover {
+  background: var(--branch-color, #7c3aed);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.13);
+}
+
+.lt-branch-card__label {
+  width: 100%;
+}
+
+/* 아바타 이미지 */
+.lt-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}

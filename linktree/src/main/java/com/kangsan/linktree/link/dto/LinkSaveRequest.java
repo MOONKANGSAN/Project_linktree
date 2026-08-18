@@ -8,6 +8,7 @@ public record LinkSaveRequest(
         String label,
         String url,
         String portfolioInputType, // "url" or "file" (포트폴리오 타입일 때만)
+        String existingFilePath,   // 수정 시 기존 파일 경로 (새 파일 미선택이면 이 값으로 유지)
         boolean hasBranch,
         List<BranchSaveRequest> branches
 ) {}

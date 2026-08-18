@@ -1,5 +1,6 @@
 package com.kangsan.linktree.link;
 
+import com.kangsan.linktree.global.enums.CommonState;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,11 @@ public class LinkBranch {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idx")
     private Long idx;
+
+    // 가지치기 항목 상태 (ACTIVE: 정상, INACTIVE: 숨김) — 기본값 ACTIVE
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false, columnDefinition = "VARCHAR(10) NOT NULL DEFAULT 'ACTIVE'")
+    private CommonState state;
 
     // 상위 링크 고유번호
     @Column(name = "link_idx", nullable = false)
@@ -51,6 +57,7 @@ public class LinkBranch {
         this.inputType = inputType;
         this.filePath = filePath;
         this.sortOrder = sortOrder;
+        this.state = CommonState.ACTIVE;
     }
 
     public void updateFilePath(String filePath) {

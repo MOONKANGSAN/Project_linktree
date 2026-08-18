@@ -19,6 +19,7 @@ export interface BranchItem {
   url: string
   inputType: PortfolioInputType
   file: File | null
+  existingFilePath?: string | null  // 수정 시 기존 파일 경로
 }
 
 export interface LinkFormItem {
@@ -28,6 +29,7 @@ export interface LinkFormItem {
   url: string
   portfolioInputType: PortfolioInputType
   portfolioFile: File | null
+  existingFilePath?: string | null  // 수정 시 기존 파일 경로
   hasBranch: boolean
   branches: BranchItem[]
 }

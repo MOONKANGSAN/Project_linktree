@@ -1,6 +1,9 @@
 package com.kangsan.linktree.link;
 
+import com.kangsan.linktree.global.enums.CommonState;
 import com.kangsan.linktree.link.dto.*;
+import com.kangsan.linktree.member.Member;
+import com.kangsan.linktree.member.MemberRepository;
 import com.kangsan.linktree.profile.Profile;
 import com.kangsan.linktree.profile.ProfileRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +29,7 @@ public class LinkService {
     private final LinkRepository linkRepository;
     private final LinkBranchRepository branchRepository;
     private final ProfileRepository profileRepository;
+    private final MemberRepository memberRepository;
 
     @Value("${app.upload.dir}")
     private String uploadDir;
@@ -38,6 +44,38 @@ public class LinkService {
                             .map(BranchResponse::from).toList();
                     return LinkResponse.from(link, branches);
                 }).toList();
+    }
+
+    // 공개 프로필 조회 — loginId로 회원/프로필/링크 조합하여 반환
+    // 해당 loginId가 없거나 링크가 없으면 Optional.empty() 반환 → 프론트에서 데모 페이지 사용
+    public Optional<PublicProfileResponse> getPublicProfile(String loginId) {
+        Optional<Member> memberOpt = memberRepository.findByLoginId(loginId);
+        if (memberOpt.isEmpty()) return Optional.empty();
+
+        Optional<Profile> profileOpt = profileRepository.findByMemberIdx(memberOpt.get().getIdx());
+        if (profileOpt.isEmpty()) return Optional.empty();
+
+        Profile profile = profileOpt.get();
+        // 공개 뷰에서는 ACTIVE 상태인 링크만 노출
+        List<Link> links = linkRepository.findByProfileIdxAndStateOrderBySortOrder(profile.getIdx(), CommonState.ACTIVE);
+        if (links.isEmpty()) return Optional.empty();
+
+        List<LinkResponse> linkResponses = links.stream().map(link -> {
+            // 공개 뷰에서는 ACTIVE 상태인 가지치기만 노출
+            List<BranchResponse> branches = branchRepository
+                    .findByLinkIdxAndStateOrderBySortOrder(link.getIdx(), CommonState.ACTIVE).stream()
+                    .map(BranchResponse::from).toList();
+            return LinkResponse.from(link, branches);
+        }).toList();
+
+        return Optional.of(new PublicProfileResponse(
+                loginId,
+                profile.getBio1(),
+                profile.getBio2(),
+                profile.getBio3(),
+                profile.getPhotoPath(),
+                linkResponses
+        ));
     }
 
     // 링크 전체 저장 (기존 데이터 교체 방식)
@@ -59,6 +97,8 @@ public class LinkService {
                     .label(req.label())
                     .url(req.url())
                     .portfolioInputType(req.portfolioInputType())
+                    // 수정 시 새 파일을 올리지 않으면 기존 파일 경로 유지
+                    .filePath(req.existingFilePath())
                     .hasBranch(req.hasBranch())
                     .sortOrder(order)
                     .build());
@@ -72,6 +112,7 @@ public class LinkService {
                             .label(br.label())
                             .url(br.url())
                             .inputType(br.inputType() != null ? br.inputType() : "url")
+                            .filePath(br.existingFilePath())
                             .sortOrder(brOrder)
                             .build());
                     return BranchResponse.from(branch);
@@ -114,7 +155,9 @@ public class LinkService {
         Files.createDirectories(dir);
         String fileName = prefix + "_" + UUID.randomUUID() + ext;
         Path dest = dir.resolve(fileName);
-        file.transferTo(dest.toFile());
+        // transferTo(File)는 Tomcat 임시 경로 기준으로 해석되어 FileNotFoundException 유발
+        // InputStream에서 직접 복사하면 경로 문제 없이 동작함
+        Files.copy(file.getInputStream(), dest, StandardCopyOption.REPLACE_EXISTING);
         return dest.toString();
     }
 

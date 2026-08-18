@@ -18,6 +18,11 @@ export default defineConfig({
         target: 'http://backend:8080',
         changeOrigin: true,
       },
+      // 업로드 파일(프로필 사진, 포트폴리오 파일) 백엔드 정적 파일 프록시
+      '/uploads': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+      },
     },
   },
 })
