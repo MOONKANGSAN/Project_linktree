@@ -7,13 +7,14 @@ import { LINK_TYPE_META } from '../data/linkTypes'
 import './LinktreePage.css'
 
 const DEMO = HARDCODED_USERS['demo']
-const MAX_BRANCHES_VIEW = 3
+const MAX_BRANCHES_VIEW = 4
 
-/* ── 가지치기 카드 목록 ── */
+/* ── 가지치기 카드 목록 — 항상 4칸 기준 그리드 ── */
 function BranchList({ branches, color }: { branches: ApiBranch[]; color: string }) {
+  const items = branches.slice(0, MAX_BRANCHES_VIEW)
   return (
     <div className="lt-branch-list">
-      {branches.slice(0, MAX_BRANCHES_VIEW).map(branch => {
+      {items.map(branch => {
         const isFile = branch.inputType === 'file'
         return (
           <a
@@ -26,7 +27,6 @@ function BranchList({ branches, color }: { branches: ApiBranch[]; color: string 
             onClick={isFile ? e => e.preventDefault() : undefined}
           >
             <span className="lt-branch-card__label">{branch.label}</span>
-            {!isFile && <span className="lt-branch-card__arrow">↗</span>}
           </a>
         )
       })}

@@ -4,7 +4,7 @@ import type { LinkFormItem, BranchItem, LinkType, PortfolioInputType, ProfileFor
 import { LINK_TYPE_META, LINK_TYPES } from '../data/linkTypes'
 
 export const MAX_LINKS = 10
-export const MAX_BRANCHES = 3
+export const MAX_BRANCHES = 4
 export const MAX_BIOS = 3
 
 export const uid = () => Math.random().toString(36).slice(2)
@@ -88,8 +88,9 @@ export function BranchRow({ branch, onChange, onRemove }: BranchRowProps) {
       <input
         className="reg-input"
         type="text"
-        placeholder="버튼 이름 (예: 백오피스)"
+        placeholder="버튼 이름 (최대 8자)"
         value={branch.label}
+        maxLength={8}
         onChange={e => onChange({ label: e.target.value })}
       />
       <UrlFileInput

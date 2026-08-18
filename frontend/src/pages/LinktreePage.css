@@ -253,52 +253,51 @@
   flex-direction: column;
 }
 
-/* 가지치기 카드 목록 */
+/* 가지치기 카드 목록 — 항상 4칸 기준 고정 그리드 */
 .lt-branch-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 6px 0 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding-top: 8px;
 }
 
 /* 가지치기 개별 카드
+ * - 정사각형 (aspect-ratio: 1)
  * - 아래 모서리만 둥글게
- * - 충분한 패딩으로 정사각형에 가깝게
+ * - 카드 수와 무관하게 4칸 기준 너비 고정
  */
 .lt-branch-card {
+  /* 이전(4:3) 세로의 60% → 4:3 × 0.6 = height/width 0.45 → 20:9 */
+  aspect-ratio: 20 / 11;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 22px 20px;
+  justify-content: center;
+  text-align: center;
+  padding: 8px 6px;
   background: #fff;
-  border-radius: 0 0 16px 16px;
+  border-radius: 0 0 14px 14px;
+  border-top: 3px solid var(--branch-color, #7c3aed);
   text-decoration: none;
   color: #1e293b;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
+  line-height: 1.4;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  border-left: 4px solid var(--branch-color, #7c3aed);
   transition: all 0.18s ease;
+  word-break: keep-all;
+  overflow: hidden;
 }
 
 .lt-branch-card:hover {
   background: var(--branch-color, #7c3aed);
   color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.13);
 }
 
 .lt-branch-card__label {
-  flex: 1;
-}
-
-.lt-branch-card__arrow {
-  font-size: 13px;
-  opacity: 0.5;
-}
-
-.lt-branch-card:hover .lt-branch-card__arrow {
-  opacity: 1;
+  width: 100%;
 }
 
 /* 아바타 이미지 */
