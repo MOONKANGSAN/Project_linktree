@@ -70,6 +70,7 @@ public class LinkService {
 
         return Optional.of(new PublicProfileResponse(
                 loginId,
+                profile.getNickname(),
                 profile.getBio1(),
                 profile.getBio2(),
                 profile.getBio3(),

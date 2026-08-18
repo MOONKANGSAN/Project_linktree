@@ -299,6 +299,18 @@ export function ProfileSection({ form, onChange }: ProfileSectionProps) {
         <div className="profile-photo-info">
           <p className="profile-photo-hint">프로필 사진을 클릭하면 변경할 수 있습니다.</p>
           <p className="profile-photo-hint">JPG, PNG, WEBP 지원</p>
+          <div className="visibility-row">
+            <label className="reg-label visibility-label">공개여부</label>
+            <select
+              className="visibility-select"
+              value={form.visibility}
+              onChange={e => onChange({ visibility: Number(e.target.value) })}
+            >
+              <option value={2}>전체공개</option>
+              <option value={1}>나만보기</option>
+              <option value={3}>링크를 전달받은 사람만 공유</option>
+            </select>
+          </div>
           {form.photo && (
             <button
               type="button"
@@ -315,6 +327,18 @@ export function ProfileSection({ form, onChange }: ProfileSectionProps) {
           accept="image/jpeg,image/png,image/webp"
           style={{ display: 'none' }}
           onChange={handlePhotoChange}
+        />
+      </div>
+
+      <div className="nickname-section">
+        <label className="reg-label">닉네임</label>
+        <input
+          className="reg-input"
+          type="text"
+          placeholder="프로필 카드에 표시될 닉네임 (최대 20자)"
+          value={form.nickname}
+          maxLength={20}
+          onChange={e => onChange({ nickname: e.target.value })}
         />
       </div>
 

@@ -40,7 +40,7 @@ function photoPathToPreviewUrl(photoPath: string | null): string {
 
 function LinkRegisterPage() {
   const [profile, setProfile] = useState<ProfileForm>({
-    photo: null, photoPreview: '', bios: [''],
+    photo: null, photoPreview: '', visibility: 2, nickname: '', bios: [''],
   })
   const [links, setLinks] = useState<LinkFormItem[]>([emptyLink(), emptyLink()])
   // true: 기존 데이터 있음(수정 모드) / false: 신규 등록 모드
@@ -68,11 +68,13 @@ function LinkRegisterPage() {
         const profileData = await profileRes.json()
         const bios = [profileData.bio1, profileData.bio2, profileData.bio3]
           .filter(Boolean) as string[]
-        if (bios.length > 0 || profileData.photoPath) {
+        if (bios.length > 0 || profileData.photoPath || profileData.nickname) {
           hasExistingData = true
           setProfile({
             photo: null,
             photoPreview: photoPathToPreviewUrl(profileData.photoPath),
+            visibility: profileData.visibility ?? 2,
+            nickname: profileData.nickname ?? '',
             bios: bios.length > 0 ? bios : [''],
           })
         }
@@ -127,12 +129,14 @@ function LinkRegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      // 1) 소개글 저장
+      // 1) 공개여부 + 닉네임 + 소개글 저장
       const profileRes = await fetch('/api/profile/me', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
         body: JSON.stringify({
+          visibility: profile.visibility,
+          nickname: profile.nickname || null,
           bio1: profile.bios[0] ?? null,
           bio2: profile.bios[1] ?? null,
           bio3: profile.bios[2] ?? null,

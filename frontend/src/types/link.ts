@@ -38,5 +38,7 @@ export interface LinkFormItem {
 export interface ProfileForm {
   photo: File | null
   photoPreview: string
+  visibility: number  // 1:나만보기 / 2:전체공개(기본) / 3:링크받은사람만
+  nickname: string
   bios: string[]
 }
