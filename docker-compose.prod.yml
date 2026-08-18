@@ -1,0 +1,34 @@
+# docker-compose.prod.yml
+# 운영 서버 배포 전용 오버라이드 (기존 docker-compose.yml의 dev 설정을 덮어씀)
+# 실행: docker compose -f docker-compose.yml -f docker-compose.prod.yml --env-file .env up -d --build
+services:
+
+  # ── React 프론트엔드: dev 서버 대신 Nginx 운영 빌드 사용 ─────────
+  frontend:
+    build:
+      # frontend/Dockerfile의 "AS production" 스테이지(Nginx 정적 서빙)를 사용
+      target: production
+    # !override: 기존 docker-compose.yml의 "5173:5173" 매핑을 지우고 아래 값으로 완전히 대체
+    # (YAML 리스트는 기본적으로 병합(추가)되므로, 완전 교체하려면 !override가 필요함
+    #  — !reset은 값을 아예 비워버리므로 포트를 "바꿔서" 열 때는 !override를 사용)
+    ports: !override
+      - "${FRONTEND_PORT:-8090}:80"
+    # develop.watch는 `docker compose watch` 명령에서만 사용되고
+    # `up`/`up -d`에는 영향이 없으므로 운영 배포에서는 별도 처리가 필요 없음
+
+  # ── Spring Boot 백엔드: 외부(호스트)에는 포트를 열지 않음 ──────────
+  # 프론트 Nginx가 도커 내부 네트워크(linktree-network)로 backend:8080에
+  # 직접 프록시하므로, 인터넷에 노출할 필요가 없음 (공격 표면 축소)
+  backend:
+    # !reset: 기존 "8081:8080" 호스트 포트 매핑을 지움 (완전 비공개)
+    ports: !reset []
+    environment:
+      # SecurityConfig의 CORS 허용 Origin — 실제 프론트 접속 URL과 정확히 일치해야 함
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
+
+  # ── MySQL: 외부(호스트)에는 포트를 열지 않음 ───────────────────
+  # 디버깅 등으로 로컬에서 잠깐 접속해야 한다면 배포 시점에만
+  # "127.0.0.1:${MYSQL_PORT}:3306" 형태로 한시적으로 열 것 (0.0.0.0 금지)
+  db:
+    # !reset: 기존 "3307:3306" 호스트 포트 매핑을 지움 (완전 비공개)
+    ports: !reset []

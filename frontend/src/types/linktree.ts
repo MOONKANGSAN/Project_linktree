@@ -42,6 +42,8 @@ export interface ApiLink {
 
 export interface PublicProfile {
   loginId: string
+  shareToken: string | null
+  nickname: string | null
   bio1: string | null
   bio2: string | null
   bio3: string | null

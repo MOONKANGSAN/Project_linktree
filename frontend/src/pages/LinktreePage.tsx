@@ -94,6 +94,7 @@ function LinktreePage() {
   const [loading, setLoading] = useState(true)
   // 현재 펼쳐진 가지치기 링크 idx (하나만 열 수 있음)
   const [expandedLinkIdx, setExpandedLinkIdx] = useState<number | null>(null)
+  const [copied, setCopied] = useState(false)
 
   useEffect(() => {
     fetch('/api/members/me', { credentials: 'include' })
@@ -119,6 +120,20 @@ function LinktreePage() {
 
   const toggleBranch = (idx: number) => {
     setExpandedLinkIdx(prev => (prev === idx ? null : idx))
+  }
+
+  // shareToken이 있으면 토큰 URL, 없으면 loginId URL을 클립보드에 복사
+  const handleCopy = async (profile: { shareToken: string | null; loginId: string }) => {
+    const slug = profile.shareToken ?? profile.loginId
+    const url = `${window.location.origin}/${slug}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard API 미지원 브라우저 대응
+      prompt('아래 링크를 복사해 주세요:', url)
+    }
   }
 
   /* ── 데모 모드 ── */
@@ -168,9 +183,11 @@ function LinktreePage() {
   return (
     <div className="lt-wrapper" style={{ '--theme': '#7c3aed' } as React.CSSProperties}>
       <div className="lt-bg-gradient" />
-      <div className="lt-topbar">
-        <button className="lt-my-btn" onClick={handleMyLinkUp}>🌿 내 LinkUP</button>
-      </div>
+      {!isMyPage && (
+        <div className="lt-topbar">
+          <button className="lt-my-btn" onClick={handleMyLinkUp}>🌿 내 LinkUP</button>
+        </div>
+      )}
       <main className="lt-main">
         <section className="lt-profile">
           <div className="lt-avatar">
@@ -182,12 +199,20 @@ function LinktreePage() {
                 />
               : '👤'}
           </div>
-          <h1 className="lt-display-name">{apiProfile.loginId}</h1>
+          <h1 className="lt-display-name">{apiProfile.nickname || apiProfile.loginId}</h1>
           <p className="lt-username">@{apiProfile.loginId}</p>
           {bios.length > 0 && (
             <div className="lt-bio">
               {bios.map((bio, i) => <p key={i}>{bio}</p>)}
             </div>
+          )}
+          {!isMyPage && (
+            <button
+              className={`lt-copy-btn${copied ? ' lt-copy-btn--copied' : ''}`}
+              onClick={() => handleCopy(apiProfile)}
+            >
+              {copied ? '✓ 복사됨!' : '🔗 링크 복사'}
+            </button>
           )}
           {isMyPage && <a href="/register" className="lt-manage-btn">✏️ 내 링크업 관리</a>}
         </section>

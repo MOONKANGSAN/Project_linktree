@@ -46,16 +46,30 @@ public class LinkService {
                 }).toList();
     }
 
-    // 공개 프로필 조회 — loginId로 회원/프로필/링크 조합하여 반환
-    // 해당 loginId가 없거나 링크가 없으면 Optional.empty() 반환 → 프론트에서 데모 페이지 사용
-    public Optional<PublicProfileResponse> getPublicProfile(String loginId) {
-        Optional<Member> memberOpt = memberRepository.findByLoginId(loginId);
-        if (memberOpt.isEmpty()) return Optional.empty();
+    // 공개 프로필 조회 — loginId 또는 shareToken 둘 다 허용
+    // 1) loginId로 먼저 시도, 없으면 2) shareToken으로 재시도
+    // 링크가 없으면 Optional.empty() 반환 → 프론트에서 데모 페이지 사용
+    public Optional<PublicProfileResponse> getPublicProfile(String param) {
+        Profile profile;
+        String loginId;
 
-        Optional<Profile> profileOpt = profileRepository.findByMemberIdx(memberOpt.get().getIdx());
-        if (profileOpt.isEmpty()) return Optional.empty();
+        Optional<Member> memberOpt = memberRepository.findByLoginId(param);
+        if (memberOpt.isPresent()) {
+            // loginId로 진입한 경우
+            Optional<Profile> profileOpt = profileRepository.findByMemberIdx(memberOpt.get().getIdx());
+            if (profileOpt.isEmpty()) return Optional.empty();
+            profile = profileOpt.get();
+            loginId = memberOpt.get().getId();
+        } else {
+            // shareToken으로 진입한 경우 — loginId가 URL에 드러나지 않음
+            Optional<Profile> profileByToken = profileRepository.findByShareToken(param);
+            if (profileByToken.isEmpty()) return Optional.empty();
+            profile = profileByToken.get();
+            Optional<Member> memberByIdx = memberRepository.findById(profile.getMemberIdx());
+            if (memberByIdx.isEmpty()) return Optional.empty();
+            loginId = memberByIdx.get().getId();
+        }
 
-        Profile profile = profileOpt.get();
         // 공개 뷰에서는 ACTIVE 상태인 링크만 노출
         List<Link> links = linkRepository.findByProfileIdxAndStateOrderBySortOrder(profile.getIdx(), CommonState.ACTIVE);
         if (links.isEmpty()) return Optional.empty();
@@ -70,6 +84,7 @@ public class LinkService {
 
         return Optional.of(new PublicProfileResponse(
                 loginId,
+                profile.getShareToken(),
                 profile.getNickname(),
                 profile.getBio1(),
                 profile.getBio2(),

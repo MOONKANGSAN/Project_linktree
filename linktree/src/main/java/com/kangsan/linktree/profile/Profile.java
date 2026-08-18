@@ -3,6 +3,7 @@ package com.kangsan.linktree.profile;
 import com.kangsan.linktree.global.enums.CommonState;
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
 
 /**
  * 프로필 엔티티 (DB 테이블: profile)
@@ -32,6 +33,10 @@ public class Profile {
     @Column(name = "photo_path", length = 500)
     private String photoPath;
 
+    // 공유 링크용 UUID — loginId를 URL에 노출하지 않고 프로필 공유 시 사용
+    @Column(name = "share_token", unique = true, length = 36)
+    private String shareToken;
+
     // 공개여부 (1:나만보기 / 2:전체공개(기본) / 3:링크받은사람만) — DB TINYINT
     @Convert(converter = ShareTypeConverter.class)
     @Column(name = "visibility", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 2")
@@ -55,6 +60,7 @@ public class Profile {
     public Profile(Long memberIdx, String photoPath, ShareType visibility, String nickname, String bio1, String bio2, String bio3) {
         this.memberIdx = memberIdx;
         this.photoPath = photoPath;
+        this.shareToken = UUID.randomUUID().toString();
         this.visibility = visibility != null ? visibility : ShareType.PUBLIC;
         this.nickname = nickname;
         this.bio1 = bio1;
@@ -64,7 +70,9 @@ public class Profile {
     }
 
     // 공개여부 + 닉네임 + 소개글 업데이트 (저장 시 함께 처리)
+    // shareToken이 없는 기존 데이터도 이 시점에 자동 생성 (마이그레이션)
     public void updateProfile(ShareType visibility, String nickname, String bio1, String bio2, String bio3) {
+        if (this.shareToken == null) this.shareToken = UUID.randomUUID().toString();
         this.visibility = visibility != null ? visibility : ShareType.PUBLIC;
         this.nickname = nickname;
         this.bio1 = bio1;

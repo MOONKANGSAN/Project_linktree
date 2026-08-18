@@ -22,7 +22,8 @@ COPY . .
 RUN npm run build
 
 # ── Stage 3: Nginx로 정적 파일 서빙 + API 프록시 ─────────────────
-FROM nginx:alpine
+# target 이름 지정 → docker compose build --target production 으로 운영 스테이지 선택 가능
+FROM nginx:alpine AS production
 WORKDIR /usr/share/nginx/html
 
 # 빌드 결과물 복사
