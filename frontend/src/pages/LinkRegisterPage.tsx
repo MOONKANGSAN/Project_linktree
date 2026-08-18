@@ -162,7 +162,7 @@ function LinkRegisterPage() {
       const linkPayload = links.map(l => ({
         linkType: l.type,
         label: l.label,
-        url: l.type === 'portfolio' && l.portfolioInputType === 'url' ? l.url : '',
+        url: (l.type === 'portfolio' && l.portfolioInputType === 'file') ? '' : l.url,
         portfolioInputType: l.type === 'portfolio' ? l.portfolioInputType : null,
         existingFilePath: l.portfolioFile ? null : (l.existingFilePath ?? null),
         hasBranch: l.hasBranch,

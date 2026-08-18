@@ -242,7 +242,66 @@
   gap: 16px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 64px;
+  margin-bottom: 40px;
+}
+
+/* 검색 영역 */
+.landing-search {
+  margin-bottom: 52px;
+}
+
+/* pill 형태 검색 폼 — 그라디언트 테두리 (padding-box / border-box 트릭) */
+.search-form {
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 50px;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(90deg, #7c3aed, #2563eb) border-box;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+}
+.search-form:focus-within {
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 14px 22px;
+  font-size: 15px;
+  color: #1e293b;
+  background: transparent;
+  font-family: inherit;
+  min-width: 0;
+}
+.search-input::placeholder {
+  color: #c4c4c4;
+}
+
+.search-btn {
+  flex-shrink: 0;
+  margin: 5px;
+  padding: 10px 24px;
+  background: linear-gradient(90deg, #7c3aed, #2563eb);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.search-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+.search-btn:active {
+  transform: translateY(0);
 }
 .btn {
   padding: 14px 32px;

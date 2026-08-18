@@ -9,6 +9,7 @@ function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginUserId, setLoginUserId] = useState('')
   const [modal, setModal] = useState<ModalType>(null)
+  const [searchQuery, setSearchQuery] = useState('')
   // 모바일 전용: 프로필 버튼 클릭 시 열리는 인증 선택 메뉴
   const [mobileAuthMenu, setMobileAuthMenu] = useState(false)
 
@@ -31,6 +32,23 @@ function LandingPage() {
   const openModal = (type: ModalType) => {
     setMobileAuthMenu(false)
     setModal(type)
+  }
+
+  // 닉네임 또는 공유받은 링크로 프로필 페이지 이동
+  // URL 형태로 입력하면 경로 마지막 세그먼트(닉네임)만 추출
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    const q = searchQuery.trim()
+    if (!q) return
+    let target = q
+    try {
+      const url = new URL(q)
+      const segments = url.pathname.split('/').filter(Boolean)
+      if (segments.length > 0) target = segments[segments.length - 1]
+    } catch {
+      // URL이 아닌 일반 닉네임 — 그대로 사용
+    }
+    window.location.href = `/${target}`
   }
 
   return (
@@ -133,6 +151,20 @@ function LandingPage() {
           <a className="btn btn--ghost" href="/demo">
             데모 보기 →
           </a>
+        </div>
+
+        {/* 검색 영역 */}
+        <div className="landing-search">
+          <form className="search-form" onSubmit={handleSearch} noValidate>
+            <input
+              className="search-input"
+              type="text"
+              placeholder="사용자 닉네임 혹은 공유받은 링크를 입력해보세요!"
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            <button type="submit" className="search-btn">검색</button>
+          </form>
         </div>
 
         {/* 기능 소개 카드 */}

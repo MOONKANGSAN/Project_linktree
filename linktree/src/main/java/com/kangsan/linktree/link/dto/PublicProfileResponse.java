@@ -2,9 +2,10 @@ package com.kangsan.linktree.link.dto;
 
 import java.util.List;
 
-// 공개 프로필 조회 응답 DTO — 세션 없이 loginId로 접근 가능
+// 공개 프로필 조회 응답 DTO — 세션 없이 loginId 또는 shareToken으로 접근 가능
 public record PublicProfileResponse(
         String loginId,
+        String shareToken,
         String nickname,
         String bio1,
         String bio2,
