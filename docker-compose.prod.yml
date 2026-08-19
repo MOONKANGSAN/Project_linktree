@@ -46,5 +46,7 @@ services:
     # !reset: 기존 "3307:3306" 호스트 포트 매핑을 지움 (완전 비공개)
     ports: !reset []
     # 마찬가지로 메모리 상한 + 커넥션 수 상한 (앱 인스턴스 1개만 붙으므로 기본 151개는 과함)
-    mem_limit: 320m
-    command: --innodb-buffer-pool-size=96M --max-connections=50
+    # 320m은 MySQL 8.0 임시 서버 기동 단계에서 죽기에 충분히 낮은 값이었음
+    # ("Unable to determine if daemon is running" 에러로 재현됨) → 512m으로 상향
+    mem_limit: 512m
+    command: --innodb-buffer-pool-size=128M --max-connections=50
