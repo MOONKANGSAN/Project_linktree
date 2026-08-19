@@ -54,3 +54,11 @@ export interface PublicProfile {
 export interface LinktreePageProps {
   userId: string
 }
+
+// 검색 결과 응답 타입 (GET /api/public/search?keyword=)
+export interface SearchResultItem {
+  loginId: string
+  nickname: string | null
+  photoPath: string | null
+  bio1: string | null
+}

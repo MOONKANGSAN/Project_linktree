@@ -46,6 +46,8 @@ function LinkRegisterPage() {
   // true: 기존 데이터 있음(수정 모드) / false: 신규 등록 모드
   const [isEditMode, setIsEditMode] = useState(false)
   const [loading, setLoading] = useState(true)
+  // 로그인한 회원의 아이디 — 저장 완료 후 "내 링크업" 페이지(/{loginId})로 이동할 때 사용
+  const [loginId, setLoginId] = useState<string | null>(null)
 
   // 마운트 시: 로그인 체크 + 기존 데이터 로드
   useEffect(() => {
@@ -59,6 +61,12 @@ function LinkRegisterPage() {
         alert('로그인이 필요한 서비스입니다.')
         window.location.href = '/'
         return
+      }
+
+      // 로그인 아이디 저장 (수정 완료 후 이동할 내 링크업 경로에 사용)
+      if (authRes.ok) {
+        const authData = await authRes.json()
+        setLoginId(authData.id)
       }
 
       let hasExistingData = false
@@ -212,6 +220,8 @@ function LinkRegisterPage() {
       }
 
       alert(isEditMode ? '수정이 완료되었습니다!' : '저장이 완료되었습니다!')
+      // 저장/수정 완료 후 내 링크업 페이지로 이동
+      window.location.href = loginId ? `/${loginId}` : '/'
     } catch (err) {
       alert('저장 중 오류가 발생했습니다.')
       console.error(err)
@@ -223,10 +233,11 @@ function LinkRegisterPage() {
   return (
     <div className="register-wrapper">
       <header className="register-header">
-        <a href="/" className="register-header__back">← 돌아가기</a>
+        {/* LinkUP 로고 클릭 시 메인 페이지로 이동 */}
         <h1 className="register-header__title">
-          Link<span className="register-header__up">UP</span>{' '}
-          {isEditMode ? '수정' : '등록'}
+          <a href="/" className="register-header__logo-link">
+            Link<span className="register-header__up">UP</span>
+          </a>
         </h1>
       </header>
 

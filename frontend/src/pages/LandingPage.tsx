@@ -1,11 +1,13 @@
 /* 시작 유도 랜딩 페이지: ?id 쿼리 없을 때 노출 */
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import type { ModalType } from '../types/auth'
 import LoginModal from '../components/LoginModal'
 import SignUpModal from '../components/SignUpModal'
 import './LandingPage.css'
 
 function LandingPage() {
+  const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [loginUserId, setLoginUserId] = useState('')
   const [modal, setModal] = useState<ModalType>(null)
@@ -34,21 +36,23 @@ function LandingPage() {
     setModal(type)
   }
 
-  // 닉네임 또는 공유받은 링크로 프로필 페이지 이동
-  // URL 형태로 입력하면 경로 마지막 세그먼트(닉네임)만 추출
+  // 검색창 제출 처리 (엔터 혹은 검색 버튼)
+  // - 입력값이 http:// 또는 https:// 로 시작하면: 백엔드를 거치지 않고 해당 주소로 바로 이동
+  // - 그 외(아이디 혹은 닉네임으로 간주): 검색 리스트 페이지(/search_list)로 이동
+  //   실제 아이디/닉네임 SQL 조회는 search_list 페이지 진입 시 AJAX(fetch)로 백엔드(GET /api/public/search)에 요청함
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     const q = searchQuery.trim()
     if (!q) return
-    let target = q
-    try {
-      const url = new URL(q)
-      const segments = url.pathname.split('/').filter(Boolean)
-      if (segments.length > 0) target = segments[segments.length - 1]
-    } catch {
-      // URL이 아닌 일반 닉네임 — 그대로 사용
+
+    if (/^https?:\/\//i.test(q)) {
+      // URL 형태 입력 — 해당 주소로 바로 이동
+      window.location.href = q
+      return
     }
-    window.location.href = `/${target}`
+
+    // 아이디/닉네임 검색 — 검색 리스트 페이지로 이동
+    navigate(`/search_list?keyword=${encodeURIComponent(q)}`)
   }
 
   return (
