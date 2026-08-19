@@ -37,8 +37,11 @@ WORKDIR /usr/share/nginx/html
 # 빌드 결과물 복사
 COPY --from=builder /app/dist .
 
-# Nginx 설정 복사 (API 프록시 포함)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# nginx.conf를 /etc/nginx/templates/ 밑에 *.template로 넣으면, nginx 공식 이미지의
+# 시작 스크립트가 자동으로 envsubst를 돌려서 ${DOMAIN} 같은 변수를 컨테이너 기동 시점의
+# 환경변수 값으로 치환한 뒤 /etc/nginx/conf.d/default.conf로 생성해줌
+# (도메인 값을 이미지 빌드에 굽지 않고 docker-compose.prod.yml의 environment로 주입하기 위함)
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
-EXPOSE 80
+EXPOSE 80 443
 CMD ["nginx", "-g", "daemon off;"]
