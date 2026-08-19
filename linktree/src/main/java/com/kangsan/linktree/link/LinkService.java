@@ -94,6 +94,15 @@ public class LinkService {
         ));
     }
 
+    // 메인 페이지 검색(아이디/닉네임) — search_list 페이지에서 AJAX(fetch)로 호출
+    // 공백 키워드는 빈 목록으로 처리 (컨트롤러 단에서 별도 검증하지 않아도 안전)
+    public List<SearchResultResponse> searchProfiles(String keyword) {
+        if (keyword == null || keyword.isBlank()) return List.of();
+        return profileRepository.searchPublicProfiles(keyword.trim()).stream()
+                .map(SearchResultResponse::from)
+                .toList();
+    }
+
     // 링크 전체 저장 (기존 데이터 교체 방식)
     @Transactional
     public List<LinkResponse> saveLinks(Long memberIdx, List<LinkSaveRequest> requests) {
